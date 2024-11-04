@@ -36,11 +36,12 @@ jobs:
       - name: Stash, Pull, and Apply Changes
         run: |
           git stash push -m "Saving uncommitted changes"
-          git pull
+          git checkout build || git checkout -b build  # Create build branch if it doesn't exist
+          git pull origin build
           git stash pop || echo "No stash to apply"
           git add data/cleaned_data.csv
           git commit -m "Update cleaned data" || echo "No changes to commit"
-          git push
+          git push origin build
 
       - name: Train Model
         run: python scripts/train_model.py
@@ -48,11 +49,12 @@ jobs:
       - name: Commit model
         run: |
           git stash push -m "Saving uncommitted changes"
-          git pull
+          git checkout build  # Ensure we are on the build branch
+          git pull origin build
           git stash pop || echo "No stash to apply"
           git add scripts/churn_model.pkl
           git commit -m "Update trained model" || echo "No changes to commit"
-          git push
+          git push origin build
 
       - name: Set up Node.js
         uses: actions/setup-node@v3  # Updated to latest version

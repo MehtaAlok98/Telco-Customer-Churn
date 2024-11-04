@@ -18,8 +18,8 @@ app.add_middleware(
 )
 
 # URL of the model file and dataset
-model_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/main/scripts/churn_model.pkl"
-data_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/main/data/cleaned_data.csv"
+model_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/build/scripts/churn_model.pkl"
+data_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/build/data/cleaned_data.csv"
 
 # Load model on startup
 model = None

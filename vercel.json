@@ -19,6 +19,7 @@
     { "src": "/(.*)", "dest": "/static/index.html" }
   ],
   "env": {
-    "MPLCONFIGDIR": "/tmp/matplotlib"
+    "MPLCONFIGDIR": "/tmp/matplotlib",
+    "PYTHON_VERSION": "3.8"
   }
 }
