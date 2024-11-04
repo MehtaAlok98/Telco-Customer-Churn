@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  data-cleaning:
+  data-pipeline-and-deployment:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -19,32 +19,21 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-      
+
       - name: Clean Data
         run: python scripts/data_cleaning.py
-      
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "alokmehta1432@gmail.com"
+          git config --global user.name "Alok Kumar"
+
       - name: Commit cleaned data
         run: |
           git add data/cleaned_data.csv
           git commit -m "Update cleaned data"
           git push
 
-  train-model:
-    runs-on: ubuntu-latest
-    needs: data-cleaning
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.8"
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-      
       - name: Train Model
         run: python scripts/train_model.py
       
@@ -53,13 +42,6 @@ jobs:
           git add scripts/churn_model.pkl
           git commit -m "Update trained model"
           git push
-
-  deploy-api:
-    runs-on: ubuntu-latest
-    needs: train-model
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
 
       - name: Install Vercel CLI
         run: npm install -g vercel
