@@ -21,7 +21,9 @@ async def fetch_model(url):
         response = await client.get(url)
         return pickle.loads(response.content)
 
-model = fetch_model(model_url)
+# Fetch the model
+model = httpx.get(model_url).content
+model = pickle.loads(model)
 
 @dataclass
 class InputData:
