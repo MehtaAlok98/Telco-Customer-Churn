@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3  # Updated to latest version
-      
+        uses: actions/checkout@v3
+
       - name: Set up Python
-        uses: actions/setup-python@v4  # Updated to latest version
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
 
@@ -20,6 +20,16 @@ jobs:
         run: |
           sudo apt-get install git-lfs
           git lfs install
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            !~/.cache/pip/log
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
@@ -33,25 +43,14 @@ jobs:
           git config --global user.email "alokmehta1432@gmail.com"
           git config --global user.name "Alok Kumar"
 
-      - name: Checkout or Create Build Branch
-        run: |
-          git fetch origin
-          if git show-ref --verify --quiet refs/heads/build; then
-            git checkout build
-            git pull origin build --rebase  # Pull latest changes with rebase
-          else
-            git checkout -b build
-            git push -u origin build  # Push the new branch to the remote
-          fi
-
       - name: Stash, Pull, and Apply Changes
         run: |
           git stash push -m "Saving uncommitted changes" || echo "No local changes to save"
-          git pull origin build --rebase  # Pull latest changes with rebase
+          git pull origin build --rebase
           git stash pop || echo "No stash to apply"
           git add data/cleaned_data.csv
           git commit -m "Update cleaned data" || echo "No changes to commit"
-          git push -f origin build  # Force push the changes
+          git push -f origin build
 
       - name: Train Model
         run: python scripts/train_model.py
@@ -60,12 +59,12 @@ jobs:
         run: |
           git add scripts/churn_model.pkl
           git commit -m "Update trained model" || echo "No changes to commit"
-          git push -f origin build  # Force push the model changes
+          git push -f origin build
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3  # Updated to latest version
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Updated to Node.js 20
+          node-version: '20'
 
       - name: Install Vercel CLI
         run: npm install -g vercel
