@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Churn Prediction and Visualization</title>
+    <style>
+        #data-summary {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>Customer Churn Prediction</h1>
@@ -13,6 +20,17 @@
         <label>Dependents: <input type="number" name="Dependents" required></label><br>
         <label>Tenure: <input type="number" name="tenure" required></label><br>
         <label>PhoneService: <input type="number" name="PhoneService" required></label><br>
+        <label>MultipleLines: <input type="number" name="MultipleLines" required></label><br>
+        <label>InternetService: <input type="number" name="InternetService" required></label><br>
+        <label>OnlineSecurity: <input type="number" name="OnlineSecurity" required></label><br>
+        <label>OnlineBackup: <input type="number" name="OnlineBackup" required></label><br>
+        <label>DeviceProtection: <input type="number" name="DeviceProtection" required></label><br>
+        <label>TechSupport: <input type="number" name="TechSupport" required></label><br>
+        <label>StreamingTV: <input type="number" name="StreamingTV" required></label><br>
+        <label>StreamingMovies: <input type="number" name="StreamingMovies" required></label><br>
+        <label>Contract: <input type="number" name="Contract" required></label><br>
+        <label>PaperlessBilling: <input type="number" name="PaperlessBilling" required></label><br>
+        <label>PaymentMethod: <input type="number" name="PaymentMethod" required></label><br>
         <label>MonthlyCharges: <input type="number" name="MonthlyCharges" step="0.01" required></label><br>
         <label>TotalCharges: <input type="number" name="TotalCharges" step="0.01" required></label><br>
         <button type="submit">Predict</button>
@@ -20,10 +38,11 @@
     <div id="prediction-result"></div>
 
     <h2>Churn Rate Visualization</h2>
-    <button onclick="fetchVisualization()">Load Churn Visualization</button>
-    <div id="visualization-container">
-        <img id="churn-visualization" src="" alt="Churn Rate Visualization" style="display: none;" />
-        <p id="error-message" style="color: red;"></p>
+    <button onclick="fetchDataSummary()">Load Churn Rate Summary</button>
+    <div id="data-summary" style="display: none;">
+        <h3>Churn Rate Summary</h3>
+        <div id="contract-counts"></div>
+        <div id="churn-counts"></div>
     </div>
 
     <script>
@@ -43,21 +62,36 @@
             document.getElementById("prediction-result").innerText = `Prediction: ${result.prediction}`;
         });
 
-        async function fetchVisualization() {
-            const url = '/api/visualize';
+        async function fetchDataSummary() {
+            const url = '/api/data-summary';
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error("Failed to load visualization.");
-                const data = await response.json();
-                document.getElementById('churn-visualization').src = data.image;
-                document.getElementById('churn-visualization').style.display = 'block';
-                document.getElementById('error-message').textContent = '';
+                if (!response.ok) throw new Error("Failed to load data summary.");
+                const summary = await response.json();
+
+                // Display contract counts
+                const contractCountsDiv = document.getElementById('contract-counts');
+                contractCountsDiv.innerHTML = '<h4>Contract Counts:</h4>';
+                for (const [contractType, count] of Object.entries(summary.contract_counts)) {
+                    contractCountsDiv.innerHTML += `<p>${contractType}: ${count}</p>`;
+                }
+
+                // Display churn counts
+                const churnCountsDiv = document.getElementById('churn-counts');
+                churnCountsDiv.innerHTML = '<h4>Churn Counts:</h4>';
+                for (const [churnStatus, count] of Object.entries(summary.churn_counts)) {
+                    churnCountsDiv.innerHTML += `<p>${churnStatus}: ${count}</p>`;
+                }
+
+                document.getElementById('data-summary').style.display = 'block';
             } catch (error) {
-                document.getElementById('error-message').textContent = error.message;
+                document.getElementById('data-summary').style.display = 'none';
+                alert(error.message);
             }
         }
 
-        fetchVisualization();
+        // Optional: Fetch data summary on page load
+        fetchDataSummary();
     </script>
 </body>
 </html>

@@ -1,6 +1,4 @@
 fastapi
 uvicorn
-scikit-learn
-matplotlib
-pandas
+scikit-learn==0.24.2
 httpx

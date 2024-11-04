@@ -1,21 +1,25 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from dataclasses import dataclass
 import pickle
-import matplotlib.pyplot as plt
-import pandas as pd
-import io
-import base64
 import httpx
+from collections import Counter
 
 app = FastAPI()
 
-# Serve static files from the 'static' directory
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# Enable CORS for all origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# URL of the model file
+# URL of the model file and dataset
 model_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/main/scripts/churn_model.pkl"
+data_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/main/data/cleaned_data.csv"
 
 # Load model on startup
 model = None
@@ -76,30 +80,38 @@ async def predict(data: InputData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/api/visualize")
-async def visualize_data():
-    data_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/main/data/cleaned_data.csv"
+@app.get("/api/data-summary")
+async def data_summary():
     try:
-        df = pd.read_csv(data_url)
-        if df.empty:
-            raise ValueError("Dataset is empty.")
+        # Fetch the dataset
+        async with httpx.AsyncClient() as client:
+            response = await client.get(data_url)
+            response.raise_for_status()
+            data = response.text.splitlines()
         
-        plt.figure(figsize=(10, 6))
-        plt.hist(df['Contract'], bins=20, alpha=0.5, label='Contract Type')
-        plt.title('Churn Rate by Contract Type')
-        plt.xlabel('Contract Type')
-        plt.ylabel('Count')
-        plt.legend(title='Churn', loc='upper right')
-        
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=100)
-        buf.seek(0)
-        plt.close()
-        
-        image_base64 = base64.b64encode(buf.read()).decode('utf-8')
-        return {"image": f"data:image/png;base64,{image_base64}"}
+        # Process the data
+        headers = data[0].split(",")  # Extract headers from the first line
+        contract_idx = headers.index("Contract")
+        churn_idx = headers.index("Churn")
+
+        contract_counts = Counter()
+        churn_counts = Counter()
+
+        for row in data[1:]:
+            fields = row.split(",")
+            contract_counts[fields[contract_idx]] += 1
+            churn_counts[fields[churn_idx]] += 1
+
+        # Prepare summary data
+        summary = {
+            "contract_counts": dict(contract_counts),
+            "churn_counts": dict(churn_counts),
+        }
+
+        return summary
+
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Error processing data: {e}")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
