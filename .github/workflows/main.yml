@@ -43,22 +43,16 @@ jobs:
           git config --global user.email "alokmehta1432@gmail.com"
           git config --global user.name "Alok Kumar"
 
-      - name: Recreate build branch
+      - name: Create or Update Build Branch
         run: |
           git fetch origin
-          git branch -D build || echo "No existing 'build' branch to delete."
-          git checkout -b build
-          git push -u origin build  # Create a new build branch on origin
-
-      - name: Pull latest changes from build
-        run: |
-          git pull origin build --rebase  # Pull the latest changes to avoid non-fast-forward errors
-
+          git checkout -B build origin/build  # Create or reset the local build branch to match the remote
+          
       - name: Commit Cleaned Data
         run: |
           git add data/cleaned_data.csv
           git commit -m "Update cleaned data" || echo "No changes to commit"
-          git push -f origin build
+          git push origin build  # Push changes without forcing
 
       - name: Train Model
         run: python scripts/train_model.py
@@ -67,7 +61,7 @@ jobs:
         run: |
           git add scripts/churn_model.pkl
           git commit -m "Update trained model" || echo "No changes to commit"
-          git push -f origin build
+          git push origin build  # Push changes without forcing
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
