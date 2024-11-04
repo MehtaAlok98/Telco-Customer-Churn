@@ -38,7 +38,7 @@ jobs:
           git fetch origin
           if git show-ref --verify --quiet refs/heads/build; then
             git checkout build
-            git pull origin build  # Pull latest changes from remote
+            git pull origin build --rebase  # Pull latest changes with rebase
           else
             git checkout -b build
             git push -u origin build  # Push the new branch to the remote
@@ -47,7 +47,7 @@ jobs:
       - name: Stash, Pull, and Apply Changes
         run: |
           git stash push -m "Saving uncommitted changes" || echo "No local changes to save"
-          git pull origin build
+          git pull origin build --rebase  # Pull latest changes with rebase
           git stash pop || echo "No stash to apply"
           git add data/cleaned_data.csv
           git commit -m "Update cleaned data" || echo "No changes to commit"
