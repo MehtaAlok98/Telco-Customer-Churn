@@ -1,4 +1,3 @@
-# api/app.py
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -52,14 +51,12 @@ async def predict(data: InputData):
 
 @app.get("/visualize")
 async def visualize_data():
-    # Load your dataset (ensure this path is correct)
     try:
         df = pd.read_csv('data/cleaned_data.csv')  
 
         if df.empty:
             raise ValueError("Dataset is empty.")
 
-        # Create a visualization (example: churn rate by contract type)
         plt.figure(figsize=(10, 6))
         sns.countplot(x='Contract', hue='Churn', data=df)
         plt.title('Churn Rate by Contract Type')
@@ -67,13 +64,11 @@ async def visualize_data():
         plt.ylabel('Count')
         plt.legend(title='Churn', loc='upper right')
 
-        # Save the plot to a BytesIO object
         buf = io.BytesIO()
         plt.savefig(buf, format='png')
         buf.seek(0)
         plt.close()
 
-        # Encode the plot to base64
         image_base64 = base64.b64encode(buf.read()).decode('utf-8')
         return {"image": f"data:image/png;base64,{image_base64}"}
     
