@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/main.py",
+      "src": "api/app.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "1024mb",
@@ -10,15 +10,16 @@
       }
     },
     {
-      "src": "static/*.html",
+      "src": "static/index.html",
       "use": "@vercel/static"
     }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/main.py" },
+    { "src": "/api/.*", "dest": "api/app.py" },
     { "src": "/(.*)", "dest": "/static/index.html" }
   ],
   "env": {
-    "MPLCONFIGDIR": "/tmp/matplotlib"
+    "MPLCONFIGDIR": "/tmp/matplotlib",
+    "APP_MODULE": "main:app"
   }
 }
