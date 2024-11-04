@@ -18,7 +18,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r scripts/requirements.txt
+          pip install -r requirements.txt
       
       - name: Clean Data
         run: python scripts/data_cleaning.py
@@ -43,7 +43,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r scripts/requirements.txt
+          pip install -r requirements.txt
       
       - name: Train Model
         run: python scripts/train_model.py
