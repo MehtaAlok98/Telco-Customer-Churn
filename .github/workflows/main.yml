@@ -33,10 +33,19 @@ jobs:
           git config --global user.email "alokmehta1432@gmail.com"
           git config --global user.name "Alok Kumar"
 
+      - name: Checkout or Create Build Branch
+        run: |
+          git fetch origin
+          if git show-ref --verify --quiet refs/heads/build; then
+            git checkout build
+          else
+            git checkout -b build
+            git push -u origin build  # Push the new branch to the remote
+          fi
+
       - name: Stash, Pull, and Apply Changes
         run: |
-          git stash push -m "Saving uncommitted changes"
-          git checkout build || git checkout -b build  # Create build branch if it doesn't exist
+          git stash push -m "Saving uncommitted changes" || echo "No local changes to save"
           git pull origin build
           git stash pop || echo "No stash to apply"
           git add data/cleaned_data.csv
@@ -48,10 +57,6 @@ jobs:
       
       - name: Commit model
         run: |
-          git stash push -m "Saving uncommitted changes"
-          git checkout build  # Ensure we are on the build branch
-          git pull origin build
-          git stash pop || echo "No stash to apply"
           git add scripts/churn_model.pkl
           git commit -m "Update trained model" || echo "No changes to commit"
           git push origin build
