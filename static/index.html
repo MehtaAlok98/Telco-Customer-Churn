@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churn Visualization</title>
+</head>
+<body>
+    <h1>Churn Rate Visualization</h1>
+    <img id="churn-visualization" src="" alt="Churn Rate Visualization" />
+
+    <script>
+        async function fetchVisualization() {
+            const response = await fetch('https://telco-churn-model.vercel.app/visualize'); // Update this URL to your Vercel deployment
+            const data = await response.json();
+            document.getElementById('churn-visualization').src = data.image;
+        }
+
+        fetchVisualization();
+    </script>
+</body>
+</html>
