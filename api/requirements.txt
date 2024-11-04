@@ -1,8 +1,7 @@
 fastapi
 uvicorn
-pydantic
-joblib
+dataclasses
+pickle
 matplotlib
-seaborn
 pandas
-requests
+httpx

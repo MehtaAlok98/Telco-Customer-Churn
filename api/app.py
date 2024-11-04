@@ -1,13 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-import joblib
+from dataclasses import dataclass
+import pickle
 import matplotlib.pyplot as plt
-import seaborn as sns
 import pandas as pd
 import io
 import base64
-import requests
+import httpx
 
 app = FastAPI()
 
@@ -16,10 +15,16 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Load the model from the URL
 model_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/main/scripts/churn_model.pkl"
-response = requests.get(model_url)
-model = joblib.load(io.BytesIO(response.content))
 
-class InputData(BaseModel):
+async def fetch_model(url):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        return pickle.loads(response.content)
+
+model = fetch_model(model_url)
+
+@dataclass
+class InputData:
     SeniorCitizen: int
     Partner: int
     Dependents: int
@@ -63,7 +68,7 @@ async def visualize_data():
             raise ValueError("Dataset is empty.")
 
         plt.figure(figsize=(10, 6))
-        sns.countplot(x='Contract', hue='Churn', data=df)
+        plt.hist(df['Contract'], bins=20, alpha=0.5, label='Contract Type')
         plt.title('Churn Rate by Contract Type')
         plt.xlabel('Contract Type')
         plt.ylabel('Count')
