@@ -18,21 +18,21 @@ jobs:
 
       - name: Install Git LFS
         run: |
+          sudo apt-get update
           sudo apt-get install git-lfs
           git lfs install
 
       - name: Cache Python dependencies
         uses: actions/cache@v3
         with:
-          path: |
-            ~/.cache/pip
-            !~/.cache/pip/log
+          path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
+          pip install --upgrade pip  # Upgrade pip before installing requirements
           pip install --upgrade -r requirements.txt
 
       - name: Clean Data
@@ -43,11 +43,15 @@ jobs:
           git config --global user.email "alokmehta1432@gmail.com"
           git config --global user.name "Alok Kumar"
 
-      - name: Stash, Pull, and Apply Changes
+      - name: Recreate build branch
         run: |
-          git stash push -m "Saving uncommitted changes" || echo "No local changes to save"
-          git pull origin build --rebase
-          git stash pop || echo "No stash to apply"
+          git fetch origin
+          git branch -D build || echo "No existing 'build' branch to delete."
+          git checkout -b build
+          git push -u origin build
+
+      - name: Commit Cleaned Data
+        run: |
           git add data/cleaned_data.csv
           git commit -m "Update cleaned data" || echo "No changes to commit"
           git push -f origin build
@@ -55,7 +59,7 @@ jobs:
       - name: Train Model
         run: python scripts/train_model.py
       
-      - name: Commit model
+      - name: Commit Model
         run: |
           git add scripts/churn_model.pkl
           git commit -m "Update trained model" || echo "No changes to commit"
