@@ -1,4 +1,4 @@
 fastapi
 uvicorn
-scikit-learn>=0.24.2,<0.25
+scikit-learn
 httpx
