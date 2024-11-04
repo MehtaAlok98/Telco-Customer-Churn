@@ -6,11 +6,7 @@
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "1024mb",
-        "requirements": "api/requirements.txt",
-        "includeFiles": [
-          "scripts/churn_model.pkl",
-          "data/cleaned_data.csv"
-        ]
+        "requirements": "api/requirements.txt"
       }
     }
   ],

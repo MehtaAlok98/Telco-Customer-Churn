@@ -7,14 +7,19 @@ import seaborn as sns
 import pandas as pd
 import io
 import base64
+import requests
 
 app = FastAPI()
 
 # Serve static files from the 'static' directory
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Load the model
-model = joblib.load("scripts/churn_model.pkl")
+# Load the model from the URL
+model_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/main/scripts/churn_model.pkl"
+response = requests.get(model_url)
+with open("churn_model.pkl", "wb") as f:
+    f.write(response.content)
+model = joblib.load("churn_model.pkl")
 
 class InputData(BaseModel):
     SeniorCitizen: int
@@ -52,7 +57,9 @@ async def predict(data: InputData):
 @app.get("/visualize")
 async def visualize_data():
     try:
-        df = pd.read_csv('data/cleaned_data.csv')  
+        # Load the dataset from the URL
+        data_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/main/data/cleaned_data.csv"
+        df = pd.read_csv(data_url)  
 
         if df.empty:
             raise ValueError("Dataset is empty.")
@@ -72,7 +79,7 @@ async def visualize_data():
         image_base64 = base64.b64encode(buf.read()).decode('utf-8')
         return {"image": f"data:image/png;base64,{image_base64}"}
     
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="Dataset file not found.")
-    except ValueError as e:
+    except HTTPException:
+        raise
+    except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
