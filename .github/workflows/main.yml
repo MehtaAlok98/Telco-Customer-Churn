@@ -33,9 +33,11 @@ jobs:
           git config --global user.email "alokmehta1432@gmail.com"
           git config --global user.name "Alok Kumar"
 
-      - name: Commit cleaned data
+      - name: Stash, Pull, and Apply Changes
         run: |
+          git stash push -m "Saving uncommitted changes"
           git pull
+          git stash pop || echo "No stash to apply"
           git add data/cleaned_data.csv
           git commit -m "Update cleaned data" || echo "No changes to commit"
           git push
@@ -45,7 +47,9 @@ jobs:
       
       - name: Commit model
         run: |
+          git stash push -m "Saving uncommitted changes"
           git pull
+          git stash pop || echo "No stash to apply"
           git add scripts/churn_model.pkl
           git commit -m "Update trained model" || echo "No changes to commit"
           git push
