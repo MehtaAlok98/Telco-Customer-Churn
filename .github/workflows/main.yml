@@ -48,7 +48,11 @@ jobs:
           git fetch origin
           git branch -D build || echo "No existing 'build' branch to delete."
           git checkout -b build
-          git push -u origin build
+          git push -u origin build  # Create a new build branch on origin
+
+      - name: Pull latest changes from build
+        run: |
+          git pull origin build --rebase  # Pull the latest changes to avoid non-fast-forward errors
 
       - name: Commit Cleaned Data
         run: |
