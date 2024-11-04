@@ -7,12 +7,34 @@ app = FastAPI()
 model = joblib.load("scripts/churn_model.pkl")
 
 class InputData(BaseModel):
-    feature1: float
-    feature2: float
-    # Add additional features here
+    SeniorCitizen: int
+    Partner: int
+    Dependents: int
+    tenure: int
+    PhoneService: int
+    MultipleLines: int
+    InternetService: int
+    OnlineSecurity: int
+    OnlineBackup: int
+    DeviceProtection: int
+    TechSupport: int
+    StreamingTV: int
+    StreamingMovies: int
+    Contract: int
+    PaperlessBilling: int
+    PaymentMethod: int
+    MonthlyCharges: float
+    TotalCharges: float
 
 @app.post("/predict")
 async def predict(data: InputData):
-    input_data = [[data.feature1, data.feature2]]  # Adjust according to features
+    input_data = [[
+        data.SeniorCitizen, data.Partner, data.Dependents, data.tenure, 
+        data.PhoneService, data.MultipleLines, data.InternetService,
+        data.OnlineSecurity, data.OnlineBackup, data.DeviceProtection,
+        data.TechSupport, data.StreamingTV, data.StreamingMovies,
+        data.Contract, data.PaperlessBilling, data.PaymentMethod,
+        data.MonthlyCharges, data.TotalCharges
+    ]]
     prediction = model.predict(input_data)
     return {"prediction": int(prediction[0])}

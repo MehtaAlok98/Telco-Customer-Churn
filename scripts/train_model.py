@@ -7,8 +7,8 @@ import joblib
 def train_and_save_model():
     # Load cleaned data
     data = pd.read_csv("data/cleaned_data.csv")
-    X = data.drop("target_column", axis=1)  # Replace with your target column
-    y = data["target_column"]
+    X = data.drop("Churn", axis=1)
+    y = data["Churn"]
 
     # Split data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
