@@ -6,11 +6,18 @@
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "1024mb",
-        "requirements": "api/requirements.txt"
+        "requirements": "api/requirements.txt",
+        "includeFiles": [
+          "scripts/churn_model.pkl",
+          "data/cleaned_data.csv"
+        ]
       }
     }
   ],
   "routes": [
     { "src": "/(.*)", "dest": "api/app.py" }
-  ]
+  ],
+  "env": {
+    "MPLCONFIGDIR": "/tmp/matplotlib"
+  }
 }
