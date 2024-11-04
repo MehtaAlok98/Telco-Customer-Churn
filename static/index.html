@@ -11,7 +11,7 @@
 
     <script>
         async function fetchVisualization() {
-            const response = await fetch('https://telco-churn-model.vercel.app/visualize'); // Update this URL to your Vercel deployment
+            const response = await fetch('https://telco-churn-model.vercel.app'); // Update this URL to your Vercel deployment
             const data = await response.json();
             document.getElementById('churn-visualization').src = data.image;
         }

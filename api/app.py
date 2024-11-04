@@ -17,9 +17,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Load the model from the URL
 model_url = "https://media.githubusercontent.com/media/MehtaAlok98/Telco-Customer-Churn/refs/heads/main/scripts/churn_model.pkl"
 response = requests.get(model_url)
-with open("churn_model.pkl", "wb") as f:
-    f.write(response.content)
-model = joblib.load("churn_model.pkl")
+model = joblib.load(io.BytesIO(response.content))
 
 class InputData(BaseModel):
     SeniorCitizen: int
@@ -72,7 +70,7 @@ async def visualize_data():
         plt.legend(title='Churn', loc='upper right')
 
         buf = io.BytesIO()
-        plt.savefig(buf, format='png')
+        plt.savefig(buf, format='png', dpi=150)  # Reduce dpi for smaller image size
         buf.seek(0)
         plt.close()
 
