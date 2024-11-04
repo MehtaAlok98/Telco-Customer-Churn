@@ -16,6 +16,11 @@ jobs:
         with:
           python-version: "3.8"
 
+      - name: Install Git LFS
+        run: |
+          sudo apt-get install git-lfs
+          git lfs install
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
@@ -31,7 +36,7 @@ jobs:
       - name: Commit cleaned data
         run: |
           git add data/cleaned_data.csv
-          git commit -m "Update cleaned data"
+          git commit -m "Update cleaned data" || echo "No changes to commit"
           git push
 
       - name: Train Model
@@ -40,8 +45,13 @@ jobs:
       - name: Commit model
         run: |
           git add scripts/churn_model.pkl
-          git commit -m "Update trained model"
+          git commit -m "Update trained model" || echo "No changes to commit"
           git push
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16' # Use the Node.js version you need
 
       - name: Install Vercel CLI
         run: npm install -g vercel
