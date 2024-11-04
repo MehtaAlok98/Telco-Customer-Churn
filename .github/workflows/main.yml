@@ -51,7 +51,7 @@ jobs:
           git stash pop || echo "No stash to apply"
           git add data/cleaned_data.csv
           git commit -m "Update cleaned data" || echo "No changes to commit"
-          git push origin build
+          git push -f origin build  # Force push the changes
 
       - name: Train Model
         run: python scripts/train_model.py
@@ -60,7 +60,7 @@ jobs:
         run: |
           git add scripts/churn_model.pkl
           git commit -m "Update trained model" || echo "No changes to commit"
-          git push origin build
+          git push -f origin build  # Force push the model changes
 
       - name: Set up Node.js
         uses: actions/setup-node@v3  # Updated to latest version
