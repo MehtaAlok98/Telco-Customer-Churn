@@ -7,6 +7,7 @@ import joblib
 def train_and_save_model():
     # Load cleaned data
     data = pd.read_csv("data/cleaned_data.csv")
+    print(data.columns)  # Add this line to check the column names
     X = data.drop("Churn", axis=1)
     y = data["Churn"]
 

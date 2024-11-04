@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install --upgrade -r requirements.txt
 
       - name: Clean Data
         run: python scripts/data_cleaning.py
