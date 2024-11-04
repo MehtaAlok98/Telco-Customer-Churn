@@ -12,7 +12,7 @@ def load_and_clean_data(filepath):
     data = data.dropna()
     
     # Convert categorical columns to dummy variables, excluding the 'Churn' column
-    data = pd.get_dummies(data, columns=data.select_dtypes(include=['object']).columns.difference(['Churn']), drop_first=True)
+    # data = pd.get_dummies(data, columns=data.select_dtypes(include=['object']).columns.difference(['Churn']), drop_first=True)
     
     # Ensure 'Churn' column is retained
     if 'Churn' not in data.columns:
