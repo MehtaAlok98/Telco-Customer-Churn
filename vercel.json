@@ -2,22 +2,21 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/app.py",
+      "src": "api/main.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "1024mb",
         "requirements": "api/requirements.txt"
       }
+    },
+    {
+      "src": "static/*.html",
+      "use": "@vercel/static"
     }
   ],
-  "functions": {
-    "api/*.py": {
-      "runtime": "python3.10",
-      "maxDuration": 60
-    }
-  },
   "routes": [
-    { "src": "/(.*)", "dest": "api/app.py" }
+    { "src": "/api/(.*)", "dest": "/api/main.py" },
+    { "src": "/(.*)", "dest": "/static/index.html" }
   ],
   "env": {
     "MPLCONFIGDIR": "/tmp/matplotlib"
