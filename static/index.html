@@ -19,8 +19,12 @@
     </form>
     <div id="prediction-result"></div>
 
-    <h1>Churn Rate Visualization</h1>
-    <img id="churn-visualization" src="" alt="Churn Rate Visualization" />
+    <h2>Churn Rate Visualization</h2>
+    <button onclick="fetchVisualization()">Load Churn Visualization</button>
+    <div id="visualization-container">
+        <img id="churn-visualization" src="" alt="Churn Rate Visualization" style="display: none;" />
+        <p id="error-message" style="color: red;"></p>
+    </div>
 
     <script>
         document.getElementById("prediction-form").addEventListener("submit", async function(e) {
@@ -40,9 +44,17 @@
         });
 
         async function fetchVisualization() {
-            const response = await fetch('/api/visualize');
-            const data = await response.json();
-            document.getElementById('churn-visualization').src = data.image;
+            const url = '/api/visualize';
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Failed to load visualization.");
+                const data = await response.json();
+                document.getElementById('churn-visualization').src = data.image;
+                document.getElementById('churn-visualization').style.display = 'block';
+                document.getElementById('error-message').textContent = '';
+            } catch (error) {
+                document.getElementById('error-message').textContent = error.message;
+            }
         }
 
         fetchVisualization();
